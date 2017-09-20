@@ -36,13 +36,16 @@ class Presenter(private val view: MainView) {
     fun onTextChanged(textChanges: Observable<CharSequence>) {
         textChanges.debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
-                .switchMap { if (it.isEmpty()) {
-                    Observable.just(listOf())
-                } else
-                    service.getPosts(it.toString())
+                .switchMap {
+                    if (it.isEmpty()) {
+                        Observable.just(listOf())
+                    } else
+                        makeApiCall(it.toString())
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy { view.onPostsLoaded(it) }
 
     }
+
+    private fun makeApiCall(search: String): Observable<List<Post>> = service.getPosts(search)
 }
