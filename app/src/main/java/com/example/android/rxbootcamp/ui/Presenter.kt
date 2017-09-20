@@ -36,8 +36,8 @@ class Presenter(private val view: MainView) {
     fun onTextChanged(textChanges: Observable<CharSequence>) {
         textChanges.debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
-                .switchMap { if (it.isBlank()) {
-                    Observable.empty()
+                .switchMap { if (it.isEmpty()) {
+                    Observable.just(listOf())
                 } else
                     service.getPosts(it.toString())
                 }
